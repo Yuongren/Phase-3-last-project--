@@ -3,15 +3,17 @@ import click
 from src.db import SessionLocal
 from src.models import Vehicle, Route, Schedule
 
+# Initialize Click command group
 @click.group()
 def cli():
     pass
 
+# Seed data into the database
 @cli.command()
 def seed():
     db = SessionLocal()
 
-    # Add seed data (you can customize this)
+    # Add seed data 
     vehicle1 = Vehicle(name="Bus")
     route1 = Route(name="Route A", vehicle=vehicle1)
     schedule1 = Schedule(time="8:00 AM", route=route1)
@@ -24,6 +26,7 @@ def seed():
     db.commit()
     db.close()
 
+# List all routes
 @cli.command()
 def list_routes():
     db = SessionLocal()
@@ -34,7 +37,7 @@ def list_routes():
 
     db.close()
 
-# You can add more CLI commands as needed
+# Print each route
 
 if __name__ == "__main__":
     cli()
