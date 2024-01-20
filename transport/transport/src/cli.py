@@ -1,4 +1,4 @@
-# src/cli.py
+
 import click
 from src.db import SessionLocal
 from src.models import Vehicle, Route, Schedule

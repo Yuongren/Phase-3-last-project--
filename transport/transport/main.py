@@ -1,4 +1,4 @@
-# main.py
+
 from alembic.config import Config
 from alembic import command
 from src.db import DATABASE_URL
