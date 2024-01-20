@@ -1,43 +1,61 @@
 
 import click
-from src.db import SessionLocal
-from src.models import Vehicle, Route, Schedule
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from transport.transport.src.models import Base, Vehicle, Route, Schedule
 
-# Initialize Click command group
-@click.group()
-def cli():
-    pass
 
-# Seed data into the database
-@cli.command()
-def seed():
-    db = SessionLocal()
+engine = create_engine('sqlite:///example.db')
+Session = sessionmaker(bind=engine)
+session = Session()
 
-    # Add seed data 
-    vehicle1 = Vehicle(name="Bus")
-    route1 = Route(name="Route A", vehicle=vehicle1)
-    schedule1 = Schedule(time="8:00 AM", route=route1)
+@click.command()
+def main():
+    click.echo("Welcome to the Transport Project CLI!")
+    create_tables()
+    add_sample_data()
+    display_info()
 
-    vehicle2 = Vehicle(name="Train")
-    route2 = Route(name="Route B", vehicle=vehicle2)
-    schedule2 = Schedule(time="10:00 AM", route=route2)
+def create_tables():
+    click.echo("Creating tables...")
+    Base.metadata.create_all(engine)
+    click.echo("Tables created successfully.")
 
-    db.add_all([vehicle1, route1, schedule1, vehicle2, route2, schedule2])
-    db.commit()
-    db.close()
+def add_sample_data():
+    click.echo("Adding sample data...")
+    vehicle1 = Vehicle(name='Bus 1')
+    vehicle2 = Vehicle(name='Train 1')
+    route1 = Route(name='Route A')
+    route2 = Route(name='Route B')
+    schedule1 = Schedule(time='10:00')
+    schedule2 = Schedule(time='14:00')
 
-# List all routes
-@cli.command()
-def list_routes():
-    db = SessionLocal()
-    routes = db.query(Route).all()
+    route1.vehicles.append(vehicle1)
+    route1.schedules.append(schedule1)
+    route2.vehicles.append(vehicle2)
+    route2.schedules.append(schedule2)
 
+    session.add_all([vehicle1, vehicle2, route1, route2, schedule1, schedule2])
+    session.commit()
+    click.echo("Sample data added successfully.")
+
+def display_info():
+    click.echo("Displaying information...")
+    vehicles = session.query(Vehicle).all()
+    routes = session.query(Route).all()
+    schedules = session.query(Schedule).all()
+
+    click.echo("Vehicles:")
+    for vehicle in vehicles:
+        click.echo(f" - {vehicle.name}")
+
+    click.echo("Routes:")
     for route in routes:
-        print(f"Route ID: {route.id}, Name: {route.name}, Vehicle: {route.vehicle.name}")
+        click.echo(f" - {route.name}")
 
-    db.close()
+    click.echo("Schedules:")
+    for schedule in schedules:
+        click.echo(f" - Time: {schedule.time}, Route: {schedule.route.name}")
 
-# Print each route
-
-if __name__ == "__main__":
-    cli()
+if __name__ == '__main__':
+    main()
