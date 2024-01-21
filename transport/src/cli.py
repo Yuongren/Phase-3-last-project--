@@ -1,8 +1,8 @@
-# cli.py
+
 import click
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from transport.transport.src.models import Base, Vehicle, Route, Schedule
+from transport.src.models import Base, Vehicle, Route, Schedule
 
 engine = create_engine('sqlite:///example.db')
 Session = sessionmaker(bind=engine)
